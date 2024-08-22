@@ -1,11 +1,12 @@
 import {
-
+  View,
   FlatList,
   ActivityIndicator,
   StyleSheet,
   Text,
   TouchableOpacity,
- 
+  TextInput,
+  Image
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,13 +23,15 @@ interface Disaster {
   infoPublishedDate: string;
   summary: string;
   videos: string[];
-  data : any;
+  data: any;
 }
 
 const Homepage: React.FC = () => {
   const [disData, setDisData] = useState<Disaster[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [searchItem, setSearchItem] = useState<string | null>("");
+
   const navigation = useNavigation();
   const getAPIData = async () => {
     try {
@@ -63,22 +66,47 @@ const Homepage: React.FC = () => {
     return <Text>No data available</Text>;
   }
 
+  const filterItem = (e) => {
+    if (searchItem === "") {
+      return (
+        <Card
+          data={e}
+          onPress={() =>
+            navigation.navigate("VideoPage", {
+              videosArr: e.videos,
+              disasterSummary: e.summary,
+            })
+          }
+        />
+      );
+    } if (e.title.toLowerCase().includes(searchItem?.toLowerCase())){
+      return (
+        <Card
+          data={e}
+          onPress={() =>
+            navigation.navigate("VideoPage", {
+              videosArr: e.videos,
+              disasterSummary: e.summary,
+            })
+          }
+        />
+      )
+    }
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, padding: 20, backgroundColor: "#F4F2F3" }}>
+    <SafeAreaView style={{ flex: 1, padding: 20, backgroundColor: "#F1F1F1" }}>
+      <View >
+        <TextInput
+          placeholder="search.."
+          onChangeText={(text) => setSearchItem(text)}
+          style={styles.input}
+        />
+      </View>
       <FlatList
         data={disData}
         keyExtractor={(item) => item.disasterId.toString()}
-        renderItem={({ item }) => (
-          <Card
-            data={item}
-            onPress={() =>
-              navigation.navigate("VideoPage", {
-                videosArr: item.videos,
-                disasterSummary: item.summary,
-              })
-            }
-          />
-        )}
+        renderItem={({ item }) => filterItem(item)}
       />
     </SafeAreaView>
   );
@@ -86,4 +114,13 @@ const Homepage: React.FC = () => {
 
 export default Homepage;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+     
+  input:{
+    height: 50,
+    paddingHorizontal: 15,
+    backgroundColor: 'white',
+    borderRadius: 30,
+  },
+
+});
