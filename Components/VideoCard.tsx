@@ -1,12 +1,17 @@
 import {Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-export default function VideoCard({title}) {
+
+
+
+export default function VideoCard({title, thumbnail}) {
   return (
     <View style={styles.container}>
         <Image
             style={styles.thumbnailContainer} 
-            source={{uri:'https://picsum.photos/200/100'}}
+            source={{
+                uri: thumbnail,
+            }}
         />
         <Text style={styles.videoTitle} numberOfLines={3}>{title}</Text>
     </View>

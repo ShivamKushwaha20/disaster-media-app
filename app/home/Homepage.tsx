@@ -31,12 +31,13 @@ const Homepage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchItem, setSearchItem] = useState<string | null>("");
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   const navigation = useNavigation();
-  const getAPIData = async () => {
+  const getAPIData = async (limit:number = 20) => {
     try {
       const apiResp = await fetch(
-        "https://api.disaster-media.easc01.com/disaster/all?searchTag=&type=&location=&publishedBefore&publishedAfter "
+        `https://api.disaster-media.easc01.com/disaster/all?searchTag=&type=&location=&publishedBefore&publishedAfter&limit=${limit}`
       );
       if (!apiResp.ok) {
         throw new Error("Unable to get data from API");
@@ -52,7 +53,7 @@ const Homepage: React.FC = () => {
 
   useEffect(() => {
     getAPIData();
-  }, []);
+  }, [refresh]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -94,6 +95,14 @@ const Homepage: React.FC = () => {
     }
   };
 
+
+  const handleRefresh = ()=>{
+    setRefresh(true);
+    getAPIData(20).then(()=>{
+      setRefresh(false);
+    });
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, padding: 20, backgroundColor: "#F1F1F1" }}>
       <View >
@@ -107,6 +116,8 @@ const Homepage: React.FC = () => {
         data={disData}
         keyExtractor={(item) => item.disasterId.toString()}
         renderItem={({ item }) => filterItem(item)}
+        refreshing={refresh}
+        onRefresh={handleRefresh}
       />
     </SafeAreaView>
   );

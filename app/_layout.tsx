@@ -3,7 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import VideoPage from "./VideoPages"; // Import your VideoPage component
 import Homepage from "./home/Homepage";
-import { View } from "react-native";
+import VideoPlayer from "./VideoPlayer";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +26,13 @@ const App = () => {
           options={{ 
             title: "Disaster",
            }}
-
+        />
+        <Stack.Screen
+          name = "VideoPlayer" 
+          component={VideoPlayer}
+          options={{
+            title:"Video"
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

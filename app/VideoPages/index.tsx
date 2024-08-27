@@ -1,5 +1,4 @@
 import {
-  Button,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,19 +8,33 @@ import {
 import React, { useCallback, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import VideoCard from "../../Components/VideoCard";
+import { useNavigation } from "expo-router";
 
-interface VideoProps {
+// Define the structure of each video object
+interface Video {
   title: string;
   description: string;
   date: string;
+  url: string;
+  publishDate: string;
+  thumbnail: string;
 }
 
+// Define the type for the navigation stack parameters
 type RootStackParamList = {
-  VideoPage: { videos: string[]; disasterSummary: string };
+  VideoPage: { videosArr: Video[]; disasterSummary: string };
+  VideoPlayer: {
+    videoTitle: string;
+    videoURL: string | null;
+    videoDescription: string;
+    videoDate: string;
+  };
 };
+
+// Define the props type for the VideoPage component using NativeStackScreenProps
 type Props = NativeStackScreenProps<RootStackParamList, "VideoPage">;
 
-const VideoPage: React.FC<VideoProps> = ({ route }) => {
+const VideoPage: React.FC<Props> = ({ route, navigation }) => {
   const [playing, setPlaying] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
@@ -30,11 +43,12 @@ const VideoPage: React.FC<VideoProps> = ({ route }) => {
       setPlaying(false);
     }
   }, []);
+
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
   }, []);
 
-  // Stripping URL
+  // Extract the YouTube video ID from the URL
   const getYoutubeVideoID = (url: string): string | null => {
     const urlParams = new URLSearchParams(new URL(url).search);
     return urlParams.get("v");
@@ -44,9 +58,9 @@ const VideoPage: React.FC<VideoProps> = ({ route }) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
+  // Destructure the route parameters
   const { videosArr, disasterSummary } = route.params;
 
-  // main return point
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.description}>{disasterSummary}</Text>
@@ -55,7 +69,23 @@ const VideoPage: React.FC<VideoProps> = ({ route }) => {
       </View>
       <View>
         {videosArr.map((video, index) => (
-          <VideoCard key={index} title={video.title}/>
+          <TouchableOpacity
+            key={index}
+            onPress={() =>
+              navigation.navigate("VideoPlayer", {
+                videoTitle: video.title,
+                videoURL: getYoutubeVideoID(video.url),
+                videoDescription: video.description,
+                videoDate: video.publishDate,
+              })
+            }
+          >
+            <VideoCard
+              key={index}
+              title={video.title}
+              thumbnail={video.thumbnail}
+            />
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>

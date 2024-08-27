@@ -15,31 +15,12 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ data, onPress }) => {
   const { title, summary, incidentType, disasterId, videos } = data;
 
-  const colorType = (type: string): string => {
-    switch (type.toLowerCase()) {
-      case "earthquake":
-        return "#0CC0DF";
-        break;
-      case "hurricane":
-        return "#FF5757";
-        break;
-      case "flooding":
-        return "#0CC0DF";
-        break;
-      case "wildfire":
-        return "#FF914D";
-        break;
-      case "tornado":
-        return "#FF5757";
-        break;
-      case "volcanic eruption":
-        return "orange";
-        break;
-      default:
-        return "pink";
-    }
+  const colorType = (): string => {
+    const colors = ["#0CC0DF", "#FF5757", "#FF914D", "orange", "pink", "#A55EEA", "#FC427B", "#55E6C1"];
+    const randomIndex = Math.floor(Math.random() * colors.length);
+    return colors[randomIndex];
   };
-
+  
   const firstWordOnly = (str: string): string => {
     const firstWord = str.split(" ")[0];
     return firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase();
